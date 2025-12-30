@@ -27,4 +27,5 @@ EXPOSE 5000
 
 # Run the application
 # Use shell form to ensure $PORT is expanded correctly
-CMD gunicorn app:app --bind 0.0.0.0:${PORT:-5000} --workers 2 --timeout 120 --max-requests 1000 --max-requests-jitter 50
+# Use a simpler CMD that is more robust for environment variable expansion
+CMD gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --max-requests 1000 --max-requests-jitter 50
