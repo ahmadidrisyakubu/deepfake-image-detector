@@ -13,6 +13,7 @@ This project is a Flask-based web application that detects whether an image is A
 2. ✅ **Optimized Dockerfile**: Using slim Python base image
 3. ✅ **Docker Ignore**: Excludes unnecessary files
 4. ✅ **Expected Image Size**: ~2.5-3.0 GB (within Railway's 4GB limit)
+5. ✅ **Port Fix**: Corrected `${PORT:-5000}` syntax to ensure environment variable expansion
 
 See `OPTIMIZATION_NOTES.md` for detailed technical explanation.
 
