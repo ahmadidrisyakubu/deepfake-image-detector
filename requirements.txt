@@ -1,0 +1,9 @@
+flask>=2.0
+gunicorn
+torch>=2.0
+torchvision
+transformers>=4.30
+Pillow
+flask-limiter
+flask-wtf
+wtforms
