@@ -2,11 +2,11 @@
 
 torch==2.2.2
 torchvision==0.17.2
-transformers
-numpy
-Pillow
-flask
-flask-limiter
-flask-wtf
-wtforms
-gunicorn
+transformers==4.41.0
+numpy==1.25.3
+Pillow==10.1.0
+flask==2.3.3
+flask-limiter==2.9.0
+flask-wtf==1.1.1
+wtforms==3.0.1
+gunicorn==23.0.0
