@@ -1,0 +1,55 @@
+# Git Commands for Deployment
+
+## If you already pushed to GitHub (fixing the Railway error):
+
+cd deepfake-detector
+
+# Add the fixed runtime.txt
+git add runtime.txt RAILWAY_FIX.md
+
+# Commit the fix
+git commit -m "Fix: Update Python version for Railway compatibility"
+
+# Push to GitHub (Railway will auto-redeploy)
+git push origin main
+
+
+## If this is your first time pushing to GitHub:
+
+cd deepfake-detector
+
+# Initialize git repository
+git init
+
+# Add all files
+git add .
+
+# Create initial commit
+git commit -m "Initial commit: Deepfake detector with Railway fix"
+
+# Set main branch
+git branch -M main
+
+# Add your GitHub repository (replace YOUR_USERNAME with your GitHub username)
+git remote add origin https://github.com/YOUR_USERNAME/deepfake-detector.git
+
+# Push to GitHub
+git push -u origin main
+
+
+## After pushing:
+
+1. Go to Railway dashboard
+2. Railway will automatically detect the new commit
+3. A new build will start automatically
+4. Wait 10-15 minutes for deployment
+5. Check the build logs to verify success
+6. Test your application at the Railway URL
+
+
+## Troubleshooting:
+
+If Railway still fails, try removing runtime.txt entirely:
+git rm runtime.txt
+git commit -m "Remove runtime.txt to use Railway default Python"
+git push origin main
