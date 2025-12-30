@@ -3,7 +3,7 @@
 torch==2.2.2
 torchvision==0.17.2
 transformers==4.41.0
-numpy==1.25.3
+numpy==1.26.4
 Pillow==10.1.0
 flask==2.3.3
 flask-limiter==2.9.0
