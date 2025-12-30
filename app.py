@@ -50,11 +50,11 @@ logging.basicConfig(
 # ===============================
 # Load PyTorch Model
 # ===============================
-MODEL_NAME = "waleeyd/deepfake-detector"
+# Using a lighter model for Railway Free Tier (512MB RAM limit)
+MODEL_NAME = "prithivMLmods/Deep-Fake-Detector-Model"
 ID2LABEL = {
-    0: "Artificial",
-    1: "Deepfake",
-    2: "Real"
+    0: "Fake",
+    1: "Real"
 }
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -165,20 +165,12 @@ def predict_image(path):
         probs = torch.softmax(outputs.logits, dim=1).squeeze()
 
     # Get predictions for all classes
-    predictions = {ID2LABEL[i]: float(probs[i]) for i in range(3)}
+    # The new model has 2 classes: 0: Fake, 1: Real
+    predictions = {ID2LABEL[i]: float(probs[i]) for i in range(len(ID2LABEL))}
     
     # Find the class with highest probability
-    max_class = max(predictions, key=predictions.get)
-    max_prob = predictions[max_class]
-    
-    # Map labels: Artificial -> Fake, Deepfake/Real -> Real
-    if max_class == "Artificial":
-        label = "Fake"
-        confidence = max_prob
-    else:  # Deepfake or Real
-        label = "Real"
-        # Combine probabilities for Deepfake and Real
-        confidence = predictions["Deepfake"] + predictions["Real"]
+    label = max(predictions, key=predictions.get)
+    confidence = predictions[label]
     
     return label, round(confidence * 100, 2)
 

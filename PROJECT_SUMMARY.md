@@ -19,6 +19,7 @@ This project is a Flask-based web application that detects whether an image is A
 8. ✅ **Transformers Upgrade**: Upgraded to `transformers>=4.40.0` to support SigLIP architecture
 9. ✅ **Timm Dependency**: Added `timm` library to support the SigLIP vision architecture
 10. ✅ **Memory Optimization**: Reduced Gunicorn workers to 1 to stay within Railway's RAM limits
+11. ✅ **Lite Model**: Switched to `prithivMLmods/Deep-Fake-Detector-Model` (MobileNet-based) to fit in 512MB RAM
 
 See `OPTIMIZATION_NOTES.md` for detailed technical explanation.
 
