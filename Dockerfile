@@ -26,4 +26,5 @@ RUN mkdir -p uploads static templates
 EXPOSE 5000
 
 # Run the application
-CMD gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --max-requests 1000 --max-requests-jitter 50
+# Use shell form to ensure $PORT is expanded correctly
+CMD gunicorn app:app --bind 0.0.0.0:${PORT:-5000} --workers 2 --timeout 120 --max-requests 1000 --max-requests-jitter 50
