@@ -8,7 +8,7 @@ echo "Starting Gunicorn on port $PORT_NUMBER..."
 # Execute Gunicorn with the expanded port number
 exec gunicorn app:app \
     --bind 0.0.0.0:$PORT_NUMBER \
-    --workers 2 \
+    --workers 1 \
     --timeout 120 \
     --max-requests 1000 \
     --max-requests-jitter 50
