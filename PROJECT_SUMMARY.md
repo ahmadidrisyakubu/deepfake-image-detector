@@ -14,6 +14,8 @@ This project is a Flask-based web application that detects whether an image is A
 3. ✅ **Docker Ignore**: Excludes unnecessary files
 4. ✅ **Expected Image Size**: ~2.5-3.0 GB (within Railway's 4GB limit)
 5. ✅ **Port Fix**: Corrected `${PORT:-5000}` syntax to ensure environment variable expansion
+6. ✅ **NumPy Fix**: Forced `numpy<2.0.0` to resolve compatibility issues with PyTorch
+7. ✅ **Import Fix**: Added robust import handling for the Transformers model
 
 See `OPTIMIZATION_NOTES.md` for detailed technical explanation.
 

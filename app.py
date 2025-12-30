@@ -11,7 +11,11 @@ from functools import wraps
 from PIL import Image
 import torch
 import torchvision.transforms as T
-from transformers import SiglipForImageClassification
+try:
+    from transformers import SiglipForImageClassification
+except ImportError:
+    # Fallback for different transformers versions if needed
+    from transformers import AutoModelForImageClassification as SiglipForImageClassification
 import os
 import time
 import hashlib
