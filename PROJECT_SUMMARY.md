@@ -17,6 +17,7 @@ This project is a Flask-based web application that detects whether an image is A
 6. ✅ **NumPy Fix**: Forced `numpy<2.0.0` to resolve compatibility issues with PyTorch
 7. ✅ **Import Fix**: Added robust import handling for the Transformers model
 8. ✅ **Transformers Upgrade**: Upgraded to `transformers>=4.40.0` to support SigLIP architecture
+9. ✅ **Timm Dependency**: Added `timm` library to support the SigLIP vision architecture
 
 See `OPTIMIZATION_NOTES.md` for detailed technical explanation.
 

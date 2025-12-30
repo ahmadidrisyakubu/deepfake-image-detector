@@ -61,16 +61,29 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 try:
     # Use AutoModel for better compatibility with SigLIP architecture
+    # Added trust_remote_code and explicit architecture handling
     model = AutoModelForImageClassification.from_pretrained(
         MODEL_NAME,
         torch_dtype=torch.float32,
-        trust_remote_code=True
+        trust_remote_code=True,
+        low_cpu_mem_usage=True
     ).to(device)
     model.eval()
     logging.info(f"Model loaded successfully on {device}")
 except Exception as e:
     logging.error(f"Model load failed: {e}")
-    model = None
+    # Final fallback: try loading with specific architecture if AutoModel fails
+    try:
+        from transformers import SiglipForImageClassification
+        model = SiglipForImageClassification.from_pretrained(
+            MODEL_NAME,
+            torch_dtype=torch.float32
+        ).to(device)
+        model.eval()
+        logging.info(f"Model loaded successfully using SiglipForImageClassification on {device}")
+    except Exception as e2:
+        logging.error(f"Final model load fallback failed: {e2}")
+        model = None
 
 # Image preprocessing
 transform = T.Compose([

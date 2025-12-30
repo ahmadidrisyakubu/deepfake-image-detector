@@ -11,3 +11,4 @@ torchvision==0.16.2+cpu
 transformers>=4.40.0
 gunicorn==21.2.0
 numpy<2.0.0
+timm
