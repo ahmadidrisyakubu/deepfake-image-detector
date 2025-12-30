@@ -6,5 +6,7 @@ transformers
 numpy
 Pillow
 flask
-gunicorn
 flask-limiter
+flask-wtf
+wtforms
+gunicorn
