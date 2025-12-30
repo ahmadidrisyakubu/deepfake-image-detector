@@ -32,7 +32,8 @@ app.config.update(
 
 limiter = Limiter(
     key_func=get_remote_address,
-    default_limits=["100 per hour", "20 per minute"]
+    default_limits=["100 per hour", "20 per minute"],
+    storage_uri="memory://"
 )
 limiter.init_app(app)
 
@@ -60,7 +61,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 try:
     model = SiglipForImageClassification.from_pretrained(
         MODEL_NAME,
-        torch_dtype=torch.float32
+        dtype=torch.float32
     ).to(device)
     model.eval()
     logging.info(f"Model loaded successfully on {device}")
