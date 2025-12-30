@@ -11,11 +11,7 @@ from functools import wraps
 from PIL import Image
 import torch
 import torchvision.transforms as T
-try:
-    from transformers import SiglipForImageClassification
-except ImportError:
-    # Fallback for different transformers versions if needed
-    from transformers import AutoModelForImageClassification as SiglipForImageClassification
+from transformers import AutoModelForImageClassification
 import os
 import time
 import hashlib
@@ -64,9 +60,11 @@ ID2LABEL = {
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 try:
-    model = SiglipForImageClassification.from_pretrained(
+    # Use AutoModel for better compatibility with SigLIP architecture
+    model = AutoModelForImageClassification.from_pretrained(
         MODEL_NAME,
-        torch_dtype=torch.float32
+        torch_dtype=torch.float32,
+        trust_remote_code=True
     ).to(device)
     model.eval()
     logging.info(f"Model loaded successfully on {device}")
