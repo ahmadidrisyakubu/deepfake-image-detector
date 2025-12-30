@@ -7,7 +7,7 @@
     <title>Deepfake Detection Tool | Apex Broadcasting Network</title>
     <link rel="icon" type="image/png" href="/static/Logo.jpg">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <body style="zoom: 0.75; -moz-transform: scale(0.75); -moz-transform-origin: 0 0;">
+    <body>
     <style>
         * {
             margin: 0;
@@ -728,11 +728,11 @@
 
         <!-- Tabbed Navigation -->
         <nav class="tab-navigation">
-            <button class="tab-button active" onclick="switchTab('detection')">
+            <button class="tab-button active" onclick="switchTab(event, 'detection')">
                 <i class="fas fa-search"></i>
                 <span>Detection</span>
             </button>
-            <button class="tab-button" onclick="switchTab('literacy')">
+            <button class="tab-button" onclick="switchTab(event, 'literacy')">
                 <i class="fas fa-graduation-cap"></i>
                 <span>Deepfake Literacy</span>
             </button>
@@ -1034,12 +1034,12 @@
     </div>
 
     <script>
-        function switchTab(tabName) {
+        function switchTab(event, tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
 
             document.getElementById(tabName + '-tab').classList.add('active');
-            event.target.closest('.tab-button').classList.add('active');
+            event.currentTarget.classList.add('active');
         }
 
         const fileUploadArea = document.getElementById('fileUploadArea');
@@ -1053,7 +1053,7 @@
                 detectBtn.disabled = false;
                 fileUploadArea.classList.add('file-selected');
                 fileUploadArea.querySelector('.upload-text').innerHTML =
-                    <strong>Selected:</strong> ${imageInput.files[0].name};
+                    `<strong>Selected:</strong> ${imageInput.files[0].name}`;
             }
         });
 
