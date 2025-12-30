@@ -34,7 +34,7 @@ Our modified logic simplifies this to:
 
 ### Prerequisites
 
-- Python 3.11+
+- Python 3.11+ (any patch version)
 - pip
 
 ### Installation
