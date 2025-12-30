@@ -11,7 +11,7 @@ from functools import wraps
 from PIL import Image
 import torch
 import torchvision.transforms as T
-from transformers import SiglipForImageClassification
+from transformers import AutoModelForImageClassification
 import os
 import time
 import hashlib
@@ -50,6 +50,7 @@ logging.basicConfig(
 # ===============================
 # Load PyTorch Model
 # ===============================
+# Using high-accuracy SigLIP model for Upgraded Railway Plan
 MODEL_NAME = "waleeyd/deepfake-detector"
 ID2LABEL = {
     0: "Artificial",
@@ -60,15 +61,30 @@ ID2LABEL = {
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 try:
-    model = SiglipForImageClassification.from_pretrained(
+    # Use AutoModel for better compatibility with SigLIP architecture
+    # Added trust_remote_code and explicit architecture handling
+    model = AutoModelForImageClassification.from_pretrained(
         MODEL_NAME,
-        torch_dtype=torch.float32
+        torch_dtype=torch.float32,
+        trust_remote_code=True,
+        low_cpu_mem_usage=True
     ).to(device)
     model.eval()
     logging.info(f"Model loaded successfully on {device}")
 except Exception as e:
     logging.error(f"Model load failed: {e}")
-    model = None
+    # Final fallback: try loading with specific architecture if AutoModel fails
+    try:
+        from transformers import SiglipForImageClassification
+        model = SiglipForImageClassification.from_pretrained(
+            MODEL_NAME,
+            torch_dtype=torch.float32
+        ).to(device)
+        model.eval()
+        logging.info(f"Model loaded successfully using SiglipForImageClassification on {device}")
+    except Exception as e2:
+        logging.error(f"Final model load fallback failed: {e2}")
+        model = None
 
 # Image preprocessing
 transform = T.Compose([
@@ -257,8 +273,10 @@ def internal_error(error):
 # Run
 # ===============================
 if __name__ == "__main__":
+    # Get port from environment variable, default to 5000
+    port = int(os.environ.get("PORT", 5000))
     app.run(
         debug=False,
         host="0.0.0.0",
-        port=int(os.environ.get("PORT", 5000))
+        port=port
     )
