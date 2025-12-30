@@ -4,28 +4,6 @@
 
 This project is a Flask-based web application that detects whether an image is AI-generated (fake) or real using a PyTorch deep learning model from Hugging Face.
 
-## ⚠️ IMPORTANT: Railway Deployment Optimization
-
-**This version is optimized to fix the "Image size exceeded 4.0 GB" error.**
-
-### Changes Made:
-1. ✅ **CPU-Only PyTorch**: Reduced from ~2GB to ~500MB
-2. ✅ **Optimized Dockerfile**: Using slim Python base image
-3. ✅ **Docker Ignore**: Excludes unnecessary files
-4. ✅ **Expected Image Size**: ~2.5-3.0 GB (within Railway's 4GB limit)
-5. ✅ **Port Fix**: Corrected `${PORT:-5000}` syntax to ensure environment variable expansion
-6. ✅ **NumPy Fix**: Forced `numpy<2.0.0` to resolve compatibility issues with PyTorch
-7. ✅ **Import Fix**: Added robust import handling for the Transformers model
-8. ✅ **Transformers Upgrade**: Upgraded to `transformers>=4.40.0` to support SigLIP architecture
-9. ✅ **Timm Dependency**: Added `timm` library to support the SigLIP vision architecture
-10. ✅ **Memory Optimization**: Reduced Gunicorn workers to 1 to stay within Railway's RAM limits
-11. ✅ **Lite Model**: Switched to `prithivMLmods/Deep-Fake-Detector-Model` (MobileNet-based) to fit in 512MB RAM
-12. ✅ **Logo Fix**: Replaced missing logo file with a fallback FontAwesome icon to prevent 404 errors
-
-See `OPTIMIZATION_NOTES.md` for detailed technical explanation.
-
----
-
 ## Key Modifications from Original Requirements
 
 ### 1. **Label Mapping** ✅
@@ -61,45 +39,38 @@ else:  # Deepfake or Real
 
 ### 4. **Railway Deployment** ✅
 Configured for seamless Railway deployment:
-- `Dockerfile`: Optimized Docker configuration
-- `requirements.txt`: CPU-only PyTorch for smaller image size
 - `Procfile`: Gunicorn configuration
+- `requirements.txt`: All Python dependencies
 - `runtime.txt`: Python version specification
-- `railway.json`: Railway-specific configuration (uses Dockerfile)
-- `nixpacks.toml`: Alternative Nixpacks configuration
-- `.dockerignore`: Excludes unnecessary files from image
-- `.gitignore`: Excludes unnecessary files from git
+- `railway.json`: Railway-specific configuration
+- `.gitignore`: Excludes unnecessary files
 
 ## File Structure
 
 ```
 deepfake-detector/
-├── app.py                       # Main Flask application with PyTorch model
-├── requirements.txt             # Python dependencies (CPU-only PyTorch)
-├── Dockerfile                   # Optimized Docker configuration
-├── .dockerignore                # Docker build exclusions
-├── Procfile                     # Railway/Heroku deployment config
-├── runtime.txt                  # Python 3.11.0
-├── railway.json                 # Railway configuration (Dockerfile builder)
-├── nixpacks.toml                # Alternative Nixpacks configuration
-├── .gitignore                   # Git ignore rules
-├── README.md                    # Project documentation
-├── DEPLOYMENT_GUIDE.md          # Step-by-step Railway deployment
-├── OPTIMIZATION_NOTES.md        # Image size optimization details
-├── PROJECT_SUMMARY.md           # This file
+├── app.py                    # Main Flask application with PyTorch model
+├── requirements.txt          # Python dependencies
+├── Procfile                  # Railway/Heroku deployment config
+├── runtime.txt               # Python 3.11.0
+├── railway.json              # Railway configuration
+├── .gitignore                # Git ignore rules
+├── README.md                 # Project documentation
+├── DEPLOYMENT_GUIDE.md       # Step-by-step Railway deployment
+├── PROJECT_SUMMARY.md        # This file
 ├── templates/
-│   └── index.html              # Complete UI template (your design)
+│   └── index.html           # Complete UI template (your design)
 ├── static/
-│   └── .gitkeep                # Placeholder for static files
+│   └── .gitkeep             # Placeholder for static files
 └── uploads/
-    └── .gitkeep                # Placeholder for temporary uploads
+    └── .gitkeep             # Placeholder for temporary uploads
 ```
 
 ## Technical Stack
 
 ### Backend
 - **Flask 3.0.0**: Web framework
-- **PyTorch 2.1.2+cpu**: Deep learning framework (CPU-only)
+- **PyTorch 2.1.2**: Deep learning framework
 - **Transformers 4.36.2**: Hugging Face model library
 - **Gunicorn 21.2.0**: Production WSGI server
 
@@ -115,7 +86,6 @@ deepfake-detector/
 - **Input**: 224x224 RGB images
 - **Output**: 3 classes (Artificial, Deepfake, Real)
 - **Size**: ~400-500 MB
-- **Inference**: CPU-only (optimized for Railway)
 
 ## Key Features
 
@@ -145,12 +115,6 @@ deepfake-detector/
 - Error handling
 - Logging to file and console
 
-### 5. **Optimized for Railway**
-- CPU-only PyTorch (~500MB vs ~2GB)
-- Slim Python base image
-- Docker build optimization
-- Image size: ~2.5-3.0 GB (within 4GB limit)
-
 ## Deployment Instructions
 
 ### Quick Start
@@ -160,9 +124,8 @@ deepfake-detector/
    cd deepfake-detector
    git init
    git add .
-   git commit -m "Optimized deepfake detector for Railway"
+   git commit -m "Initial commit"
    git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
-   git branch -M main
    git push -u origin main
    ```
 
@@ -170,8 +133,7 @@ deepfake-detector/
    - Go to [railway.app](https://railway.app)
    - Click "New Project" → "Deploy from GitHub repo"
    - Select your repository
-   - Railway will detect Dockerfile and build automatically
-   - Wait for deployment (10-15 minutes for first time)
+   - Wait for deployment (5-10 minutes for first time)
 
 3. **Generate Domain**:
    - In Railway project settings
@@ -180,9 +142,6 @@ deepfake-detector/
 
 ### Detailed Guide
 See `DEPLOYMENT_GUIDE.md` for comprehensive step-by-step instructions.
-
-### Optimization Details
-See `OPTIMIZATION_NOTES.md` for technical details on image size reduction.
 
 ## Configuration Options
 
@@ -205,14 +164,12 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 ```
 
 ### Adjust Workers
-In `Procfile` or `Dockerfile`:
+In `Procfile`:
 ```
---workers 2  # Change to 1 for lower memory usage
+web: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
 ```
 
 ## Testing Locally
-
-### Using Python Directly
 
 1. **Create virtual environment**:
    ```bash
@@ -233,39 +190,17 @@ In `Procfile` or `Dockerfile`:
 4. **Access**:
    - Open browser to `http://localhost:5000`
 
-### Using Docker (Recommended)
-
-1. **Build the image**:
-   ```bash
-   docker build -t deepfake-detector .
-   ```
-
-2. **Run the container**:
-   ```bash
-   docker run -p 5000:5000 -e PORT=5000 deepfake-detector
-   ```
-
-3. **Access**:
-   - Open browser to `http://localhost:5000`
-
 ## Important Notes
 
 ### First Deployment
-- Takes 10-15 minutes due to model download
+- Takes 5-10 minutes due to model download
 - Model size: ~400-500 MB
-- Total image size: ~2.5-3.0 GB (optimized)
 - Requires stable internet connection
 
 ### Memory Requirements
 - Minimum: 1-2 GB RAM
 - Railway free tier is sufficient for testing
 - Consider paid plan for production
-
-### Performance
-- **CPU-only inference**: 1-3 seconds per image
-- **First request**: 5-10 seconds (model loading)
-- **Subsequent requests**: 1-3 seconds
-- No GPU required (Railway free tier doesn't have GPU anyway)
 
 ### Model Behavior
 - **Artificial** images are classified as **Fake**
@@ -283,60 +218,25 @@ In `Procfile` or `Dockerfile`:
 | Labels | 3 classes | 2 classes (Fake/Real) |
 | Security | Basic | Enhanced (rate limiting, CSRF, etc.) |
 | Production Server | Gradio built-in | Gunicorn |
-| PyTorch | Full package | CPU-only (optimized) |
-| Image Size | N/A | ~2.5-3.0 GB (optimized) |
 
 ## What You Need to Do
 
-1. **Download the ZIP file** (`deepfake-detector-optimized.zip`)
+1. **Download the ZIP file** (`deepfake-detector.zip`)
 2. **Extract it** to your local machine
 3. **Push to GitHub** (see instructions above)
 4. **Deploy on Railway** (see DEPLOYMENT_GUIDE.md)
-5. **Wait for build** (10-15 minutes first time)
-6. **Generate domain** and access your app
-7. **Test with sample images**
-
-## Troubleshooting
-
-### Still Getting "Image Too Large" Error?
-
-1. Check `OPTIMIZATION_NOTES.md` for additional optimization strategies
-2. Consider upgrading Railway plan (Hobby: $5/month, 10GB limit)
-3. Try removing torchvision if not needed
-4. Use multi-stage Docker build (see OPTIMIZATION_NOTES.md)
-
-### Build Fails?
-
-1. Check Railway logs for specific errors
-2. Ensure requirements.txt has correct CPU-only PyTorch URLs
-3. Verify Dockerfile syntax
-4. Try rebuilding from scratch
-
-### App Crashes?
-
-1. Check memory usage in Railway dashboard
-2. Reduce workers to 1 in Procfile
-3. Increase timeout if needed
-4. Check logs for model loading errors
+5. **Wait for model download** (first deployment only)
+6. **Test your app** with sample images
 
 ## Support
 
 - Check `README.md` for general information
 - Check `DEPLOYMENT_GUIDE.md` for deployment help
-- Check `OPTIMIZATION_NOTES.md` for size optimization details
 - Review Railway logs for troubleshooting
 - Model documentation: https://huggingface.co/waleeyd/deepfake-detector
 
 ---
 
-## Summary
-
-This optimized version reduces the Docker image from **6.0 GB to ~2.5 GB** by:
-- Using CPU-only PyTorch
-- Slim Python base image
-- Optimized Dockerfile
-- Excluding unnecessary files
-
 **Everything is configured and ready to deploy! 🚀**
 
-The model will be automatically downloaded from Hugging Face, and the image size will be within Railway's 4GB limit. Just push to GitHub and deploy on Railway!
+The model will be automatically downloaded from Hugging Face, so you don't need to upload it manually. Just push to GitHub and deploy on Railway!

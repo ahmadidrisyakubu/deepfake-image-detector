@@ -11,7 +11,7 @@ from functools import wraps
 from PIL import Image
 import torch
 import torchvision.transforms as T
-from transformers import AutoModelForImageClassification
+from transformers import SiglipForImageClassification
 import os
 import time
 import hashlib
@@ -50,40 +50,25 @@ logging.basicConfig(
 # ===============================
 # Load PyTorch Model
 # ===============================
-# Using a lighter model for Railway Free Tier (512MB RAM limit)
-MODEL_NAME = "prithivMLmods/Deep-Fake-Detector-Model"
+MODEL_NAME = "waleeyd/deepfake-detector"
 ID2LABEL = {
-    0: "Fake",
-    1: "Real"
+    0: "Artificial",
+    1: "Deepfake",
+    2: "Real"
 }
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 try:
-    # Use AutoModel for better compatibility with SigLIP architecture
-    # Added trust_remote_code and explicit architecture handling
-    model = AutoModelForImageClassification.from_pretrained(
+    model = SiglipForImageClassification.from_pretrained(
         MODEL_NAME,
-        torch_dtype=torch.float32,
-        trust_remote_code=True,
-        low_cpu_mem_usage=True
+        torch_dtype=torch.float32
     ).to(device)
     model.eval()
     logging.info(f"Model loaded successfully on {device}")
 except Exception as e:
     logging.error(f"Model load failed: {e}")
-    # Final fallback: try loading with specific architecture if AutoModel fails
-    try:
-        from transformers import SiglipForImageClassification
-        model = SiglipForImageClassification.from_pretrained(
-            MODEL_NAME,
-            torch_dtype=torch.float32
-        ).to(device)
-        model.eval()
-        logging.info(f"Model loaded successfully using SiglipForImageClassification on {device}")
-    except Exception as e2:
-        logging.error(f"Final model load fallback failed: {e2}")
-        model = None
+    model = None
 
 # Image preprocessing
 transform = T.Compose([
@@ -165,12 +150,20 @@ def predict_image(path):
         probs = torch.softmax(outputs.logits, dim=1).squeeze()
 
     # Get predictions for all classes
-    # The new model has 2 classes: 0: Fake, 1: Real
-    predictions = {ID2LABEL[i]: float(probs[i]) for i in range(len(ID2LABEL))}
+    predictions = {ID2LABEL[i]: float(probs[i]) for i in range(3)}
     
     # Find the class with highest probability
-    label = max(predictions, key=predictions.get)
-    confidence = predictions[label]
+    max_class = max(predictions, key=predictions.get)
+    max_prob = predictions[max_class]
+    
+    # Map labels: Artificial -> Fake, Deepfake/Real -> Real
+    if max_class == "Artificial":
+        label = "Fake"
+        confidence = max_prob
+    else:  # Deepfake or Real
+        label = "Real"
+        # Combine probabilities for Deepfake and Real
+        confidence = predictions["Deepfake"] + predictions["Real"]
     
     return label, round(confidence * 100, 2)
 
@@ -264,10 +257,8 @@ def internal_error(error):
 # Run
 # ===============================
 if __name__ == "__main__":
-    # Get port from environment variable, default to 5000
-    port = int(os.environ.get("PORT", 5000))
     app.run(
         debug=False,
         host="0.0.0.0",
-        port=port
+        port=int(os.environ.get("PORT", 5000))
     )
